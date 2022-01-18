@@ -11,10 +11,6 @@ BROKER_ADDRESS = "demo.thingsboard.io"
 PORT = 1883
 THINGS_BOARD_ACCESS_TOKEN = "jsc3EqiuI10DZsvfj7oe"
 
-ip = get("http://api.ipify.org").text
-print(ip)
-response = requests.get("http://ip-api.com/json/"+ip).json()
-
 def subscribed(client, userdata, mid, granted_qos):
     print("Subscribed...")
 
@@ -53,14 +49,18 @@ temp = 30
 humi = 50
 light_intensity = 100
 counter = 0
-
-longitude = response['lon']
-latitude = response['lat']
+longitude = 0
+latitude = 0
 
 while True:
+    ip = get("http://api.ipify.org").text
+    print(ip)
+    response = requests.get("http://ip-api.com/json/" + ip).json()
     collect_data = {'temperature': temp, 'humidity': humi, 'light':light_intensity,'longitude':longitude,'latitude':latitude}
     temp += 1
     humi += 1
     light_intensity += 1
+    longitude = response['lon']
+    latitude = response['lat']
     client.publish('v1/devices/me/telemetry', json.dumps(collect_data), 1)
     time.sleep(10)
